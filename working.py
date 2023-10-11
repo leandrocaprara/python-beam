@@ -17,13 +17,6 @@ class PathExtractor(beam.DoFn):
         yield element
 
 
-# def monitor_directory(event):
-#     if event.is_directory:
-#         print(f'Diretório: {event.src_path}')
-#     else:
-#         print(f'Arquivo: {event.src_path}')
-
-
 class CustomFileSystemEventHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:

@@ -8,10 +8,10 @@ from watchdog.events import FileSystemEventHandler
 from apache_beam.options.pipeline_options import PipelineOptions
 from ftplib import FTP
 
-# Diretório raiz a ser monitorado
+# Root folder to be monitored
 root_directory = "C:\\rj227\\data_source"
 
-# Pipeline Beam para processar os caminhos absolutos
+# Pipeline Beam to process absolute paths
 
 
 class PathExtractor(beam.DoFn):
@@ -48,7 +48,7 @@ class CustomFileSystemEventHandler(FileSystemEventHandler):
 
                     # Copy to another folder
                     # try:
-                    #     destination_folder = 'C:\\pasta_destino'
+                    #     destination_folder = 'C:\\destination_folder'
                     #     shutil.copy(event.src_path, os.path.join(
                     #         destination_folder, os.path.basename(event.src_path)))
                     # except:
@@ -68,7 +68,7 @@ def run_beam_pipeline():
 
 def start_beam_pipeline():
     while True:
-        # Aguarde um segundo para evitar consumo excessivo de CPU
+        # Wait a second to avoid excessive CPU usage
         time.sleep(1)
         run_beam_pipeline()
 

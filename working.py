@@ -1,10 +1,12 @@
 import os
 import time
 import threading
+import apache_beam as beam
+import shutil
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+from ftplib import FTP
 
 # Diretório raiz a ser monitorado
 root_directory = "C:\\rj227\\data_source"
@@ -20,9 +22,37 @@ class PathExtractor(beam.DoFn):
 class CustomFileSystemEventHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
-            print(f'Novo diretório criado: {event.src_path}')
+            print(f'New folder has been created: {event.src_path}')
         else:
-            print(f'Novo arquivo criado: {event.src_path}')
+            print(f'New file has been created: {event.src_path}')
+            start_time = time.time()
+            while True:
+                current_size = os.path.getsize(event.src_path)
+                time.sleep(5)  # Wait 1 second
+                new_size = os.path.getsize(event.src_path)
+
+                if current_size == new_size or time.time() - start_time > 10:
+                    print(f"File {event.src_path} is ready for processing.")
+
+                    # FTP
+                    ftp = FTP('server')
+                    ftp.login('user', 'password')
+                    with open(event.src_path, 'rb') as file:
+                        try:
+                            ftp.storbinary(
+                                'STOR ' + os.path.basename(event.src_path), file)
+                            ftp.quit()
+                        except:
+                            print(f"File cannot be uploaded.")
+                            ftp.quit()
+
+                    # Copy to another folder
+                    # try:
+                    #     destination_folder = 'C:\\pasta_destino'
+                    #     shutil.copy(event.src_path, os.path.join(
+                    #         destination_folder, os.path.basename(event.src_path)))
+                    # except:
+                    #     print(f"File cannot be moved.")
 
 
 def run_beam_pipeline():

@@ -26,25 +26,27 @@ class CustomFileSystemEventHandler(FileSystemEventHandler):
         else:
             print(f'New file has been created: {event.src_path}')
             start_time = time.time()
-            while True:
+            finish = False
+            while finish == False:
                 current_size = os.path.getsize(event.src_path)
                 time.sleep(5)  # Wait 1 second
                 new_size = os.path.getsize(event.src_path)
 
                 if current_size == new_size or time.time() - start_time > 10:
                     print(f"File {event.src_path} is ready for processing.")
+                    finish = True
 
                     # FTP
-                    ftp = FTP('server')
-                    ftp.login('user', 'password')
-                    with open(event.src_path, 'rb') as file:
-                        try:
-                            ftp.storbinary(
-                                'STOR ' + os.path.basename(event.src_path), file)
-                            ftp.quit()
-                        except:
-                            print(f"File cannot be uploaded.")
-                            ftp.quit()
+                    # ftp = FTP('server')
+                    # ftp.login('user', 'password')
+                    # with open(event.src_path, 'rb') as file:
+                    #     try:
+                    #         ftp.storbinary(
+                    #             'STOR ' + os.path.basename(event.src_path), file)
+                    #         ftp.quit()
+                    #     except:
+                    #         print(f"File cannot be uploaded.")
+                    #         ftp.quit()
 
                     # Copy to another folder
                     # try:
